@@ -4,3 +4,20 @@ What is GitHub?
  - GitHub, Inc. is an Internet hosting service for software development and version control using Git. It provides the distributed 
    version control of Git plus access control, bug tracking, software feature requests, task management, continuous integration, 
    and wikis for every project.
+
+What is a Function ?
+
+-
+
+Function MyFunction {
+	Parameter (
+		  [string]$Value1
+		  )
+	Write-Host $Value1 (Code goes here)
+}
+
+Function:creates the function 
+MyFunction: a descriptive name of the function
+Param: parmeters that user passes into function
+String:tells program what data type to expect
+#Value:variable assigned to value that is passed into by user to user in the program
