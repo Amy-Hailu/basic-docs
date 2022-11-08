@@ -1,5 +1,7 @@
 # File path of Migrations (of migration Input .txt# file or the parent folder that holds the .txt file?)
-
+$Bureau = 'MSO'
+$Folder = 'C:\Users\amy\Migrations'
+$DeleteDirectory =  Get-Content 'C:\Users\amy\Migrations\MSO\Test1.txt'
 #Check to see if Migrations folder has already been created
 $IsValidPath = Test-Path -Path $Folder
 
@@ -7,64 +9,66 @@ $IsValidPath = Test-Path -Path $Folder
 if ($IsValidPath -ne 'True') {
     Write-Host "Path not exists!"
     #Creates the Migrations folder
-    New-Item -Path 'C:\Users\amy\Migrations' -ItemType Directory 
+    New-Item -Path $Folder -ItemType Directory 
 }  
 
-#get Date format for Migrations Bureau Sub-folder
-#$date = Get-Date -Format "dddd MM_dd_yyyy"
-
 #File path of to be migrated Bureau subfolder
-$BureauFolder = 'C:\Users\amy\Migrations\Bureau'
+$BureauFolder = $Folder + "\" + $Bureau
 
-#Check to see if Bureau folder has already been created
-$IsBureauFolder = Test-Path -Path $Folder"\$BureauFolder"
+$IsBureauFolder = Test-Path -Path $BureauFolder
 
+if ($IsBureauFolder -ne 'True') {
+    Write-Host "Path not exists!"
+    #Creates the Migrations folder
+    New-Item -Path $IsBureauFolder -ItemType Directory 
+} 
+$ReportsFolder = $BureauFolder + "\Reports"
+Write-Host $ReportsFolder
 
-#If Bureau sub-folder doesn't exist then create it
-if($IsBureauFolder -ne 'True') {
-    New-Item -Path $Folder"\$BureauFolder" 
-    Write-Host $BureauFolder + " - Created in Migrations"
+$IsReportsFolder = Test-Path -Path $ReportsFolder
+
+if ($IsReportsFolder -ne 'True') {
+    Write-Host "Reports folder does not exist!"
+    #Creates the Reports folder
+    New-Item -Path $ReportsFolder -ItemType Directory 
+} 
+
+$errorcsvFile = "error.csv"
+$removecsvFile = "remove.csv"
+
+#If there is an error  csv files doesn't exist, then create it
+$IserrorcsvFile = Test-Path -Path $ReportsFolder"\$errorcsvFile"
+
+if ($IserrorcsvFile -ne 'True') {
+    Write-Host "Error file does not exist!"
+    #Creates the Reports folder
+    Add-Content -Path $ReportsFolder"\$errorcsvFile"  -Value '"User Drive path","Errors"' 
+}
+#If there is an remove  csv files doesn't exist, then create it
+$IsremovecsvFile = Test-Path -Path $ReportsFolder"\$removecsvFile"
+
+if ($IsremovecsvFile -ne 'True') {
+    Write-Host "Error file does not exist!"
+    #Creates the Reports folder
+    Add-Content -Path $ReportsFolder"\$removecsvFile"  -Value '"User Drive path","Removed Files"' 
 }
 
-#File path of to be migrated Bureau subfolder
-$ReportsFolder = 'C:\Users\amy\Migrations\Bureau\Reports'
 
-#Check to see if Reports folder has already been created
-$IsErrorReport = Test-Path -Path $Folder"\$ReportsFolder"
 
-#If Reports sub-folder doesn't exist then create it
-if($IsErrorReport -ne 'True') {
-    New-Item -Path $Folder"\$IsErrorReport"- ItemType Directory 
-    Write-Host $IsErrorReport + " - Created in Migrations"
+#loop through files to delete
+foreach ($dir in $DeleteDirectory){
+    
+    try { 
+      #delete file 
+      
+      #update csv
+      Add-Content -Path $ReportsFolder"\$removecsvFile"  -Value $dir","0""
+    }
+    catch { 
+
+        Add-Content -Path $ReportsFolder"\$errorcsvFile"  -Value $dir","Errors""
+       
+    }   
+
 }
-
-
-
-#create file name based on time of run and create the csv file from it
-$time = Get-Date -Format "HH_mm_ss" 
-$csvFile = "$time.csv"
-
-#Adding the header columns (col*) to .csv file
-Add-Content -Path $Folder"\$date\$csvFile"  -Value '"col1","col2","col3"'
-
-<#
-    This is the sample data that we are using to append to the .csv. This should be 
-    changed to the dynamic data elements later
-#>
-
-  $data = @(
-
-  '"Adam","Bertram","abertram"'
-
-  '"Joe","Jones","jjones"'
-
-  '"Mary","Baker","mbaker"'
-
-  )
-  
-  #This appends the data to the .csv by looping through each record in the variable $data
-  $data | foreach { Add-Content -Path $Folder"\$date\$csvFile" -Value $_ }
-  
-  (why are we importing this?)
-  Import-Csv $Folder"\$date\$csvFile" 
 
