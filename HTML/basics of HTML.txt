@@ -1,1 +1,2 @@
 What is HTML?
+- HTML stands for hyper text markup lanugage. 
